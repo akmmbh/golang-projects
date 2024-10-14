@@ -1,5 +1,6 @@
 package models
 //contain all the logic how controller contact databases
+//routes have give the control to controllers they give to models and then models give control to database
 
 import(
 	"github.com/jinzhu/gorm"
@@ -8,8 +9,8 @@ import(
 var db *gorm.DB
 
  type Book struct{
-	gorm.Model `gorm:""`
-	Name string `json:"name"`
+	gorm.Model 
+	Name string `gorm:""json:"name"`
 	Author string `json:"author"`
 	Publication string `json:"publication"`
 
@@ -20,3 +21,23 @@ var db *gorm.DB
 	db= config.GetDB()
 	db.AutoMigrate(&Book{})
  }
+func (b *Book) CreateBook() *Book{
+	db.NewRecord(b)
+	db.Create(&b)
+	return b
+}
+func GetAllBooks() []Book{
+	var Books []Book
+	db.Find(&Books)
+	return Books
+}
+func GetBookById(Id int64) (*Book,* gorm.DB ){
+	var getBook Book
+	db:=db.Where("ID=?",Id).Find(&getBook)
+	return & getBook,db
+}
+func DeleteBook(ID int64)Book{
+	var book Book
+	db.Where("ID=?",ID).Delete(book)
+	return book
+}
